@@ -1,0 +1,14 @@
+.js-accordion__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.3s ease, padding 0.3s ease;
+}
+
+.js-accordion:not(._accordion-opened) .js-accordion__body {
+  padding: 0 !important;
+}
+
+.js-accordion._accordion-opened .js-accordion__body {
+  grid-template-rows: 1fr;
+}

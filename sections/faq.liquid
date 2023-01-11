@@ -1,0 +1,99 @@
+{{ 'fonts.css' | asset_url | stylesheet_tag }}
+{{ 'animations.css' | asset_url | stylesheet_tag }}
+
+{{ 'component-faq.css' | asset_url | stylesheet_tag }}
+{{ 'faq-search.js' | asset_url | script_tag }}
+
+{{ 'tab.css' | asset_url | stylesheet_tag }}
+{{ 'tab.js' | asset_url | script_tag }}
+
+{{ 'accordion.css' | asset_url | stylesheet_tag }}
+{{ 'accordion.js' | asset_url | script_tag }}
+
+<div class="faq">
+  <form class="faq__search faq-search" onsubmit="return false;">
+    <svg class="faq-search__icon">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M9.0625 2.5C5.43813 2.5 2.5 5.43813 2.5 9.0625C2.5 12.6869 5.43813 15.625 9.0625 15.625C10.8732 15.625 12.5115 14.8925 13.6995 13.7062C14.8898 12.5177 15.625 10.8766 15.625 9.0625C15.625 5.43813 12.6869 2.5 9.0625 2.5ZM1.25 9.0625C1.25 4.74778 4.74778 1.25 9.0625 1.25C13.3772 1.25 16.875 4.74778 16.875 9.0625C16.875 10.9963 16.1717 12.7668 15.0081 14.1307L18.5665 17.6827C18.8108 17.9265 18.8112 18.3222 18.5673 18.5665C18.3235 18.8108 17.9278 18.8112 17.6835 18.5673L14.1237 15.0141C12.7607 16.1742 10.993 16.875 9.0625 16.875C4.74778 16.875 1.25 13.3772 1.25 9.0625Z"
+        fill="#838383" />
+    </svg>
+    <input
+      class="faq-search__input"
+      type="text"
+      placeholder="{{ section.settings.input_placeholder }}">
+  </form>
+
+  <div class="faq__empty-search faq-empty-search">
+    <div class="faq-empty-search__title">Sorry!<br>We can't find a match.</div>
+    <div class="faq-empty-search__text">Please review the word or try another search.</div>
+  </div>
+
+  <ul class="faq__tabs faq-tabs">
+    {% assign allCategories = '' %}
+
+    {% for item in page.metafields.custom_fields.faq %}
+      {% assign allCategories = allCategories | append: item.category | append: ',' %}
+    {% endfor %}
+
+    {% assign uniqCategories = allCategories | split: ',' | compact | uniq %}
+
+    {% for category in uniqCategories %}
+      {% if category != blank %}
+        {% if forloop.first %}
+          {% assign selectedCategory = category %}
+          <li class="js-tab faq-tabs__item _tab-active" data-tab="{{ category | downcase }}">{{ category }}</li>
+        {% else %}
+          <li class="js-tab faq-tabs__item" data-tab="{{ category | downcase }}">{{ category }}</li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <div class="faq__answers">
+    {%- for item in page.metafields.custom_fields.faq -%}
+      <div class="js-tab-content {% if item.category == selectedCategory %}_tab-opened{% endif %}" data-tab="{{ item.category | downcase }}">
+        <div class="faq-accordion js-accordion" data-tab="{{ item.category | downcase }}">
+          <div class="faq-accordion__trigger js-accordion__trigger">
+            <div class="faq-accordion__question">
+              {{ item.question }}
+            </div>
+            <div class="faq-accordion__icon">
+              <svg
+                width="12"
+                height="11"
+                viewBox="0 0 12 11"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10.6667 2.75C11.216 2.75 11.5296 3.39678 11.2 3.85L6.53334 10.2667C6.26668 10.6333 5.73334 10.6333 5.46668 10.2667L0.800011 3.85C0.470391 3.39677 0.78398 2.75 1.33334 2.75H10.6667Z"
+                  fill="currentColor" />
+              </svg>
+            </div>
+          </div>
+          <div class="faq-accordion__body js-accordion__body">
+            <div class="faq-accordion__text">{{ item.answer }}</div>
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "faq",
+    "tag": "section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "input_placeholder",
+        "label": "Search placeholder",
+        "default": "Search FAQ"
+      }
+    ]
+  }
+{% endschema %}
